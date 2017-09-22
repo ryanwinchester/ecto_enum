@@ -1,7 +1,7 @@
 defmodule EctoEnum.Mixfile do
   use Mix.Project
 
-  @version "1.0.2"
+  @version "1.1.1"
 
   def project do
     [
@@ -27,8 +27,8 @@ defmodule EctoEnum.Mixfile do
   defp deps do
     [
       {:ecto, "~> 2.1"},
-      {:postgrex, "~> 0.13.0", optional: true},
-      {:mariaex, "~> 0.8.0", optional: true},
+      {:postgrex, "~> 0.13", optional: true},
+      {:mariaex, "~> 0.8", optional: true},
       {:ex_doc, "~> 0.11", only: :dev},
       {:earmark, "~> 0.1", only: :dev},
       {:inch_ex, ">= 0.0.0", only: [:dev, :test]},

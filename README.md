@@ -1,8 +1,8 @@
 EctoEnum
 ========
 
-[![Hex.pm version](https://img.shields.io/hexpm/v/ecto_enum.svg?style=flat)](https://hex.pm/packages/ecto_enum) 
-[![Hex.pm downloads](https://img.shields.io/hexpm/dt/ecto_enum.svg?style=flat)](https://hex.pm/packages/ecto_enum) 
+[![Hex.pm version](https://img.shields.io/hexpm/v/ecto_enum.svg?style=flat)](https://hex.pm/packages/ecto_enum)
+[![Hex.pm downloads](https://img.shields.io/hexpm/dt/ecto_enum.svg?style=flat)](https://hex.pm/packages/ecto_enum)
 [![Inline docs](http://inch-ci.org/github/gjaldon/ecto_enum.svg?branch=master)](http://inch-ci.org/github/gjaldon/ecto_enum)
 [![Build Status](https://travis-ci.org/gjaldon/ecto_enum.svg?branch=master)](https://travis-ci.org/gjaldon/ecto_enum)
 
@@ -23,9 +23,11 @@ an enum is just defining a module. We do it like:
 
 ```elixir
 # lib/my_app/ecto_enums.ex
+defmodule MyApp.EctoEnums do
+  import EctoEnum
 
-import EctoEnum
-defenum StatusEnum, registered: 0, active: 1, inactive: 2, archived: 3
+  defenum StatusEnum, registered: 0, active: 1, inactive: 2, archived: 3
+end
 ```
 
 Once defined, `EctoEnum` can be used like any other `Ecto.Type` by passing it to a field
@@ -33,10 +35,12 @@ in your model's schema block. For example:
 
 ```elixir
 defmodule User do
-  use Ecto.Model
+  use Ecto.Schema
+
+  alias MyApp.EctoEnums.StatusEnum
 
   schema "users" do
-    field :status, StatusEnum
+    field :status, StatusEnum.Type
   end
 end
 ```
@@ -81,9 +85,11 @@ instead of `defenum/2`. We do it like:
 
 ```elixir
 # lib/my_app/ecto_enums.ex
+defmodule MyApp.EctoEnums do
+  import EctoEnum
 
-import EctoEnum
-defenum StatusEnum, :status, [:registered, :active, :inactive, :archived]
+  defenum StatusEnum, :status, [:registered, :active, :inactive, :archived]
+end
 ```
 
 The second argument is the name you want used for the new type you are creating in Postgres.
@@ -100,7 +106,7 @@ In your migrations, you can make use of helper functions like:
 
 ```elixir
 def up do
-  StatusEnum.create_type
+  StatusEnum.create_type()
   create table(:users_pg) do
     add :status, :status
   end
@@ -108,7 +114,7 @@ end
 
 def down do
   drop table(:users_pg)
-  StatusEnum.drop_type
+  StatusEnum.drop_type()
 end
 ```
 
@@ -124,9 +130,9 @@ your custom Enum module.
 defmodule MyApp.Repo.Migrations.AddToGenderEnum do
   use Ecto.Migration
   @disable_ddl_transaction true
-  
+
   def up do
-    Ecto.Migration.execute "ALTER TYPE gender ADD VALUE 'other'"
+    Ecto.Migration.execute "ALTER TYPE gender ADD VALUE IF NOT EXISTS 'other'"
   end
 
   def down do
